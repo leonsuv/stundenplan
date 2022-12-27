@@ -33,18 +33,12 @@ class ApiWrapper(private val userdata: UserData){
         val request = Request.Builder()
             .method("GET", null)
             .url("https://app.phwt.de/api/v2/events")
-            .header("Authorization", "Basic ${userdata.getRefreshToken()}")
+            .header("Authorization", "Bearer ${userdata.getRefreshToken()}")
             .build()
         OkHttpClient().newCall(request).execute().use { response ->
-//            val bodyJson = getResponseBodyJson(response)
             eventData = response.body?.let { EventData.fromJson(it.string()) }
-/*            try {
-                println(bodyJson?.toJSONArray(bodyJson.names())?.length())
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }*/
         }
-        println(eventData?.getEventsOnDate("2022-10-04"))
+        eventData?.getEventsOnDate("2022-12-12")?.let { println(it.size) }
     }
 
     private fun getResponseBodyJson(response: Response): JSONObject? {

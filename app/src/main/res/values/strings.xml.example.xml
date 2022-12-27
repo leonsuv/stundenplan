@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">stundenplan</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
+    <string name="app_name_example">stundenplan</string>
+    <string name="username_example">Username</string>
+    <string name="password_example">Password</string>
 </resources>

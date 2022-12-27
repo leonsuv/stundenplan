@@ -1,7 +1,7 @@
 package com.example.stundenplan.model
 
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import org.json.JSONArray
 import org.json.JSONObject
 
 //Under big construction
@@ -9,7 +9,6 @@ class EventData {
     //Section: model
     //Storing all Dates and events
     var data: List<DateEventData> = emptyList()
-    private lateinit var jsonData: JSONObject
 
     //Events grouped by date
     data class DateEventData(
@@ -32,33 +31,49 @@ class EventData {
     )
     //End-section: model
 
+    fun getEventsOnDate(date: String): List<Event> {
+        return (data.filter {it.date == date}).single().events
+    }
+
     //Section: Parsing Json
-    fun getEventsOnDate(date: String): DateEventData {
-
-
-        //return Gson().toJson(data.find { it.date == date }?.events ?: return "No events")
-        return DateEventData(date, emptyList())
-    }
-
-    fun saveAllEvents() {
-        //Go through all dates in json
-        //and save getEventsOnDate(date) in data
-    }
-
-    data class eventsJson(
-        val data: List<DateEventData>
-    )
-
     companion object {
         fun fromJson(json: String): EventData {
             //TODO: Parse JSON to OOP-Classes
             val eventData = EventData()
 
-            val data: eventsJson =
-                Gson().fromJson(json, eventsJson::class.java)
+            val data = JSONArray(json)
+            eventData.data = List(data.length()) { idx -> createDateEventData(data.getJSONObject(idx))}
 
-            println(data.data.size)
             return eventData
+        }
+
+        private fun createDateEventData(json: JSONObject): DateEventData {
+            return DateEventData(json.getString("Date"), createEvents(json))
+        }
+
+        private fun createEvents(json: JSONObject): List<Event> {
+            val jsonEvents = json.getJSONArray("Event")
+            return List(jsonEvents.length()) {idx -> createSingleEvent(idx, jsonEvents)}
+        }
+
+        private fun createSingleEvent(idx: Int, json: JSONArray): Event {
+            val event = json.getJSONObject(idx)
+            return Event(
+                event.getString("Title"),
+                event.getString("Kind"),
+                event.getString("Teacher"),
+                getStartTime(event.getJSONObject("Starttime")),
+                getEndTime(event.getJSONObject("Endtime")),
+                listOf("", "")
+            )
+        }
+
+        private fun getStartTime(json: JSONObject): Time {
+            return Time(json.getInt("Hour"), json.getInt("Minute"))
+        }
+
+        private fun getEndTime(json: JSONObject): Time {
+            return Time(json.getInt("Hour"), json.getInt("Minute"))
         }
     }
     //End-Section: Parsing Json

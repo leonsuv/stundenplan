@@ -6,13 +6,16 @@ import android.os.StrictMode.ThreadPolicy
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.stundenplan.ui.theme.StundenplanTheme
 import com.example.stundenplan.wrapper.ApiWrapper
@@ -25,31 +28,21 @@ class MainActivity : ComponentActivity() {
         StrictMode.setThreadPolicy(ThreadPolicy.Builder()
             .permitAll().build())
 
-        val api = ApiWrapper(UserData(resources.getString(R.string.username), resources.getString(R.string.password)))
-
+        val userData = UserData(resources.getString(R.string.username),
+                                resources.getString(R.string.password))
+        val api = ApiWrapper(userData)
         setContent {
             StundenplanTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    Row {
-                        Box(modifier = Modifier
-                            .width(110.dp)
-                            .height(50.dp)) {
-                            Greeting("Android")
-                        }
-                        Spacer(modifier = Modifier.width(1.dp))
-                        Box(modifier = Modifier
-                            .width(110.dp)
-                            .height(50.dp)) {
-                            ButtonLogin(api = api)
-                        }
-                        Spacer(modifier = Modifier.width(1.dp))
-                        Box(modifier = Modifier
-                            .width(110.dp)
-                            .height(50.dp)) {
-                            ButtonGetEvents(api = api)
-                        }
-
+                    Column {
+                        TopBar(
+                            clickLogout = api::login,
+                            clickFilter = { print("filter") },
+                            clickRefresh = api::getEvents
+                        )
+                        Spacer(modifier = Modifier.height(1.dp))
+                        NavigationBarSample()
                     }
                 }
             }
@@ -57,29 +50,62 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun TopBar(
+    clickLogout: () -> Unit,
+    clickFilter: () -> Unit,
+    clickRefresh: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text("Veranstaltungen",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
+        actions = {
+            Box {
+                Row {
+                    IconButton(onClick = clickLogout) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_logout_light),
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = clickFilter) {
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
+                            contentDescription = null
+                        )
+                    }
+                    IconButton(onClick = clickRefresh) {
+                        Icon(
+                            imageVector = Icons.Outlined.Refresh,
+                            contentDescription = null
+                        )
+                    }
+                }
+            }
+        },
+        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    StundenplanTheme {
-        Greeting("Android")
-    }
-}
+fun NavigationBarSample() {
+    var selectedItem by remember { mutableStateOf(0) }
+    val items = listOf("Veranstaltungen", "Kontakte", "Einstellungen")
+    val icons = listOf(Icons.Outlined.DateRange, Icons.Filled.AccountBox, Icons.Filled.Settings)
 
-@Composable
-fun ButtonLogin(api: ApiWrapper) {
-    Button(onClick = api::login) {
-        Text(text = "Login")
-    }
-}
-
-@Composable
-fun ButtonGetEvents(api: ApiWrapper) {
-    Button(onClick = api::getEvents) {
-        Text(text = "Events")
+    NavigationBar {
+        items.forEachIndexed { index, item ->
+            NavigationBarItem(
+                icon = { Icon(icons[index], contentDescription = item) },
+                label = { Text(item) },
+                selected = selectedItem == index,
+                onClick = { selectedItem = index }
+            )
+        }
     }
 }
