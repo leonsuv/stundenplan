@@ -1,6 +1,5 @@
 package com.example.stundenplan.model
 
-import com.google.gson.annotations.SerializedName
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -12,22 +11,22 @@ class EventData {
 
     //Events grouped by date
     data class DateEventData(
-        @SerializedName("Date") val date: String,
-        @SerializedName("Event") val events: List<Event>
+        val date: String,
+        val events: List<Event>
     )
     //Single event template
     data class Event(
-        @SerializedName("Title") val title: String,
-        @SerializedName("Kind") val kind: String,
-        @SerializedName("Teacher") val teacher: String,
-        @SerializedName("Starttime") val startTime: Time,
-        @SerializedName("Endtime") val endTime: Time,
-        @SerializedName("Rooms") val rooms: List<String>
+        val title: String,
+        val kind: String,
+        val teacher: String,
+        val startTime: Time,
+        val endTime: Time,
+        val rooms: List<String>
     )
     //Start and end time of event
     data class Time(
-        @SerializedName("Hour") val hour: Int,
-        @SerializedName("Minute") val minute: Int
+        val hour: Int,
+        val minute: Int
     )
     //End-section: model
 
