@@ -1,4 +1,4 @@
-package com.example.stundenplan.ui.theme
+package de.leonsuv.stundenplan.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

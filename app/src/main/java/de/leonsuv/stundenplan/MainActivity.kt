@@ -1,4 +1,4 @@
-package com.example.stundenplan
+package de.leonsuv.stundenplan
 
 import android.os.Bundle
 import android.os.StrictMode
@@ -17,9 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.stundenplan.ui.theme.StundenplanTheme
-import com.example.stundenplan.wrapper.ApiWrapper
-import com.example.stundenplan.wrapper.UserData
+import com.example.stundenplan.R
+import de.leonsuv.stundenplan.ui.theme.StundenplanTheme
+import de.leonsuv.stundenplan.wrapper.ApiWrapper
+import de.leonsuv.stundenplan.wrapper.UserData
 
 
 class MainActivity : ComponentActivity() {

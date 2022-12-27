@@ -1,4 +1,4 @@
-package com.example.stundenplan.ui.theme
+package de.leonsuv.stundenplan.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

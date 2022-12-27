@@ -1,4 +1,4 @@
-package com.example.stundenplan.model
+package de.leonsuv.stundenplan.model
 
 import org.json.JSONArray
 import org.json.JSONObject
@@ -41,7 +41,7 @@ class EventData {
             val eventData = EventData()
 
             val data = JSONArray(json)
-            eventData.data = List(data.length()) { idx -> createDateEventData(data.getJSONObject(idx))}
+            eventData.data = List(data.length()) { idx -> createDateEventData(data.getJSONObject(idx)) }
 
             return eventData
         }
@@ -52,7 +52,7 @@ class EventData {
 
         private fun createEvents(json: JSONObject): List<Event> {
             val jsonEvents = json.getJSONArray("Event")
-            return List(jsonEvents.length()) {idx -> createSingleEvent(idx, jsonEvents)}
+            return List(jsonEvents.length()) {idx -> createSingleEvent(idx, jsonEvents) }
         }
 
         private fun createSingleEvent(idx: Int, json: JSONArray): Event {

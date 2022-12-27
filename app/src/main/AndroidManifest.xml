@@ -15,7 +15,7 @@
         android:theme="@style/Theme.Stundenplan"
         tools:targetApi="31">
         <activity
-            android:name=".Login"
+            android:name="de.leonsuv.stundenplan.Login"
             android:exported="true"
             android:theme="@style/Theme.Stundenplan">
             <intent-filter>
@@ -28,7 +28,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="de.leonsuv.stundenplan.MainActivity"
             android:exported="false"
             android:theme="@style/Theme.Stundenplan">
 

@@ -1,4 +1,4 @@
-package com.example.stundenplan
+package de.leonsuv.stundenplan
 
 import org.junit.Test
 

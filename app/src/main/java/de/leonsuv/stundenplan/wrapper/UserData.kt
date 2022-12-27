@@ -1,4 +1,4 @@
-package com.example.stundenplan.wrapper
+package de.leonsuv.stundenplan.wrapper
 
 import java.util.Base64
 

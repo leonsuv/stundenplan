@@ -1,6 +1,6 @@
-package com.example.stundenplan.wrapper
+package de.leonsuv.stundenplan.wrapper
 
-import com.example.stundenplan.model.EventData
+import de.leonsuv.stundenplan.model.EventData
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -8,10 +8,6 @@ import org.json.JSONObject
 class ApiWrapper(private val userdata: UserData){
 
     fun login(): Boolean {
-        /* TODO:
-         * try login, return true/false (CHECKED)
-         * save access and refresh token in userdata (CHECKED)
-         */
         val request = Request.Builder()
             .method("POST", "".toRequestBody())
             .url("https://app.phwt.de/api/v1/auth/login")
@@ -38,6 +34,7 @@ class ApiWrapper(private val userdata: UserData){
         OkHttpClient().newCall(request).execute().use { response ->
             eventData = response.body?.let { EventData.fromJson(it.string()) }
         }
+        //testing:
         eventData?.getEventsOnDate("2022-12-12")?.let { println(it.size) }
     }
 

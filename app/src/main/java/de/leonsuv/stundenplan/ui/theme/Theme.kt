@@ -1,4 +1,4 @@
-package com.example.stundenplan.ui.theme
+package de.leonsuv.stundenplan.ui.theme
 
 import android.app.Activity
 import android.os.Build
