@@ -63,8 +63,13 @@ class EventData {
                 event.getString("Teacher"),
                 getStartTime(event.getJSONObject("Starttime")),
                 getEndTime(event.getJSONObject("Endtime")),
-                listOf("", "")
+                getRooms(event)
             )
+        }
+
+        private fun getRooms(event: JSONObject): List<String> {
+            val rooms = event.getJSONArray("Rooms")
+            return List(rooms.length()) {idx -> rooms.getString(idx)}
         }
 
         private fun getStartTime(json: JSONObject): Time {

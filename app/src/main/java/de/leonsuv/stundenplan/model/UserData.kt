@@ -1,9 +1,10 @@
-package de.leonsuv.stundenplan.wrapper
+package de.leonsuv.stundenplan.model
 
 import java.util.Base64
 
-class UserData (private var username: String,
-                private var password: String) {
+class UserData (private var username: String = "",
+                private var password: String = "",
+                private var base64: String = "") {
 
     private var accessToken = ""
     private var refreshToken = ""
@@ -21,8 +22,8 @@ class UserData (private var username: String,
     }
 
     fun getBase64(): String {
-        //TODO: "username:password" to Base64
-        return Base64.getEncoder().encodeToString(("$username:$password").toByteArray())
+        return if (base64 != "") base64
+            else Base64.getEncoder().encodeToString(("$username:$password").toByteArray())
     }
 
     fun setAccessToken(accessToken: String) {
@@ -49,6 +50,6 @@ class UserData (private var username: String,
         return ("Username: " + getUsername() + "\n"
                 + "getBase64: " + getBase64() + "\n"
                 + "AccessToken: " + getAccessToken() + "\n"
-                + "RefreshToken: " + getRefreshToken())
+                + "RefreshToken: " + getRefreshToken() + "\n")
     }
 }

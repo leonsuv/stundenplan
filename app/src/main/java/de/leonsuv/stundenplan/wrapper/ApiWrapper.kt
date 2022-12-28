@@ -1,8 +1,10 @@
 package de.leonsuv.stundenplan.wrapper
 
 import de.leonsuv.stundenplan.model.EventData
+import de.leonsuv.stundenplan.model.UserData
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONException
 import org.json.JSONObject
 
 class ApiWrapper(private val userdata: UserData){
@@ -13,17 +15,22 @@ class ApiWrapper(private val userdata: UserData){
             .url("https://app.phwt.de/api/v1/auth/login")
             .header("Authorization", "Basic ${userdata.getBase64()}")
             .build()
+        println(userdata.getBase64())
         OkHttpClient().newCall(request).execute().use { response ->
             val bodyJson = getResponseBodyJson(response)
-            bodyJson?.getString("access_token")?.let { userdata.setAccessToken(it) }
-            bodyJson?.getString("refresh_token")?.let { userdata.setRefreshToken(it) }
+            try {
+                bodyJson?.getString("access_token")?.let { userdata.setAccessToken(it) }
+                bodyJson?.getString("refresh_token")?.let { userdata.setRefreshToken(it) }
+            } catch (e: JSONException) {
+                return false
+            }
         }
         return userdata.isAuthorized()
     }
 
-    fun getEvents() {
+    fun getEvents(date: String): List<EventData.Event>? {
         if (!userdata.isAuthorized()) {
-            return
+            return null
         }
         var eventData: EventData?
         val request = Request.Builder()
@@ -35,7 +42,7 @@ class ApiWrapper(private val userdata: UserData){
             eventData = response.body?.let { EventData.fromJson(it.string()) }
         }
         //testing:
-        eventData?.getEventsOnDate("2022-12-12")?.let { println(it.size) }
+        return eventData?.getEventsOnDate(date)
     }
 
     private fun getResponseBodyJson(response: Response): JSONObject? {
