@@ -17,18 +17,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.stundenplan.R
-import de.leonsuv.stundenplan.wrapper.ApiWrapper
 import de.leonsuv.stundenplan.model.UserData
 import de.leonsuv.stundenplan.screen.ContactsScreen
 import de.leonsuv.stundenplan.screen.HomeScreen
 import de.leonsuv.stundenplan.screen.SettingsScreen
 import de.leonsuv.stundenplan.screen.Tags
 import de.leonsuv.stundenplan.ui.theme.*
+import de.leonsuv.stundenplan.wrapper.ApiWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,7 +75,7 @@ fun MainScreen(api: ApiWrapper) {
     // Navigation Controller initialisieren
     val navController = rememberNavController()
     // Aktueller Titel
-    var title by remember { mutableStateOf("Home") }
+    var title by remember { mutableStateOf(Tags.Home.title) }
 
     val date = remember {
         LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -88,25 +88,42 @@ fun MainScreen(api: ApiWrapper) {
                 // Obere Navigationsleiste (TopBar) anzeigen
                 TopBar(
                     clickLogout = api::login,
-                    clickFilter = { print("filter") },
-                    clickRefresh = {CoroutineScope(Dispatchers.Main).launch {api.getEvents(date)}},
-                    title
+                    clickFilter = {
+                        print("filter")
+                    },
+                    clickRefresh = {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            api.getEvents(date)
+                        }
+                    },
+                    title,
+                    navController
                 )
             },
             bottomBar = {
                 // Untere Navigationsleiste (NavigationBarSample) anzeigen
                 NavBar(navController = navController) { id: Int ->
-                    navController.navigate(Tags.Items.list[id].id)
-                    title = Tags.Items.list[id].title
+                    val item = Tags.Items.list[id]
+                    navController.navigate(item.id)
+                    title = item.title
                 }
             },
             content = {
                 val padding = it
                 // NavHost für die Navigation zwischen Bildschirmen
-                NavHost(navController = navController, startDestination = activeScreen.value.id) {
-                    composable(Tags.Home.id) { HomeScreen(padding = padding, api = api) }
-                    composable(Tags.Contacts.id) { ContactsScreen(padding = padding, api = api) }
-                    composable(Tags.Settings.id) { SettingsScreen(padding = padding) }
+                NavHost(
+                    navController = navController,
+                    startDestination = activeScreen.value.id
+                ) {
+                    composable(Tags.Home.id) {
+                        HomeScreen(padding = padding, api = api)
+                    }
+                    composable(Tags.Contacts.id) {
+                        ContactsScreen(padding = padding, api = api)
+                    }
+                    composable(Tags.Settings.id) {
+                        SettingsScreen(padding = padding)
+                    }
                 }
             }
         )
@@ -119,7 +136,8 @@ fun TopBar(
     clickLogout: () -> Unit,
     clickFilter: () -> Unit,
     clickRefresh: () -> Unit,
-    title: String
+    title: String,
+    navController: NavController
 ) {
     // Symbole für Logout, Filter und Aktualisierung
     val icons = listOf(
@@ -128,7 +146,11 @@ fun TopBar(
         R.drawable.ic_refresh_light
     )
     // Klickfunktionen für die Symbole
-    val methods = listOf(clickLogout, clickFilter, clickRefresh)
+    val methods = listOf(
+        clickLogout,
+        clickFilter,
+        clickRefresh
+    )
 
     TopAppBar(
         title = {
@@ -142,12 +164,17 @@ fun TopBar(
             Box {
                 Row {
                     // Symbole als Aktionsschaltflächen anzeigen
-                    icons.forEachIndexed { index, item ->
-                        IconButton(onClick = { methods[index] }) {
-                            Icon(
-                                painter = painterResource(id = item),
-                                contentDescription = null
-                            )
+                        icons.forEachIndexed { index, item ->
+                            if(
+                                navController.currentBackStackEntryAsState().value?.destination?.route == Tags.Home.id
+                                || item == R.drawable.ic_logout_light
+                            ) {
+                            IconButton(onClick = { methods[index] }) {
+                                Icon(
+                                    painter = painterResource(id = item),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 }
@@ -172,12 +199,9 @@ fun NavBar(navController: NavController, onClick: (Int) -> Unit) {
         Icons.Outlined.Settings
     )
 
-    val currentRoute = navController.currentBackStackEntryAsState()
 
     var selectedItem by rememberSaveable {
-        mutableIntStateOf(
-            items.indexOfFirst { it == currentRoute.value?.destination?.route }
-        )
+        mutableIntStateOf(0)
     }
 
     BackHandler {

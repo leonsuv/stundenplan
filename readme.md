@@ -27,7 +27,7 @@ val api = ApiWrapper(userData)
 ```
 or
 ```Kotlin
-val userData = UserData(base64 = "encryptedCredentials")
+val userData = UserData(base64 = "encoded:credentials")
 val api = ApiWrapper(userData)
 ```
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import de.leonsuv.stundenplan.model.EventData
@@ -34,7 +36,7 @@ import java.time.format.DateTimeFormatter
 fun EventRows(api: ApiWrapper, pagerState: PagerState, height: Dp) {
     HorizontalPager(state = pagerState) { page ->
         val date = remember(page) {
-            LocalDate.now().plusDays(page.toLong())
+            LocalDate.now().minusDays(7).plusDays(page.toLong())
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
 
@@ -54,11 +56,29 @@ fun EventRows(api: ApiWrapper, pagerState: PagerState, height: Dp) {
         }
 
         Column(modifier = Modifier.height(height)) {
+            Text(
+                text = date.split("-").asReversed().joinToString("."),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Divider()
             events?.let { eventList ->
                 LazyColumn {
                     items(eventList) { event ->
                         EventRow(event)
                         Divider()
+                    }
+                    items(1) {
+                        if (eventList.isEmpty()) {
+                            EventRow(EventData.Event(
+                                "Keine Vorlesungen",
+                                "F",
+                                "N/A",
+                                endTime = EventData.Time(0, 0),
+                                startTime = EventData.Time(0, 0),
+                                rooms = listOf("---"),
+                            ))
+                        }
                     }
                 }
             }

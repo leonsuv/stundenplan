@@ -108,16 +108,13 @@ fun LoginScreen() {
                     contentAlignment = Alignment.Center
                 ) {
                     Button(onClick = {
-                        // Erzeuge UserData-Objekt mit Benutzername und Passwort
                         val user = UserData(username, password)
-                        // Erzeuge ApiWrapper-Objekt mit dem UserData-Objekt
                         val api = ApiWrapper(user)
-                        // Führe den Anmeldevorgang aus und überprüfe das Ergebnis
                         if (!api.login()) {
                             passwordError = true
                             return@Button
                         }
-                        // Navigiere zur MainActivity und übergebe das Base64-Token
+                        // Navigiere zur MainActivity und übergebe den Base64-Token
                         val intent = Intent(context, MainActivity::class.java)
                         intent.putExtra("base64", user.getBase64())
                         context.startActivity(intent)
